@@ -30,9 +30,9 @@ class Task(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
-    descritpion: Mapped[str]
+    description: Mapped[str | None]
     status: Mapped[TaskStatus]
     priority: Mapped[TaskPriority]
     due_date: Mapped[datetime] = mapped_column(default=get_datetime_utc)
     created_at: Mapped[datetime] = mapped_column(insert_default=func.now())
-    last_updated: Mapped[datetime] = mapped_column(onupdate=get_datetime_utc)
+    last_updated: Mapped[datetime] = mapped_column(default=func.now(), onupdate=get_datetime_utc)
