@@ -12,6 +12,7 @@ class Base(DeclarativeBase):
 def get_datetime_utc() -> datetime:
     return datetime.now(timezone.utc)
 
+
 class TaskStatus(Enum):
     PENDING = "pendiente"
     IN_PROGRESS = "en progreso"
@@ -27,6 +28,7 @@ class TaskPriority(Enum):
 class Task(Base):
     __tablename__ = "task"
     
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
     descritpion: Mapped[str]
     status: Mapped[TaskStatus]
