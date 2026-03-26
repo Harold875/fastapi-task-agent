@@ -2,8 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from app.models import Base
 
+from app.config import settings
 
-URL = "sqlite:///sqlite.db"
+URL = settings.DATABASE_URL
 engine = create_engine(URL, echo=True)
 SessionDefault = sessionmaker(engine, expire_on_commit=False)
 
