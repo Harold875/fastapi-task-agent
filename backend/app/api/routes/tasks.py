@@ -1,16 +1,50 @@
-from fastapi import APIRouter, HTTPException, status
+from datetime import date
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import select
 
 from app.api.deps import SessionDB
-from app.models import Task
+from app.models import Task, TaskStatus, TaskPriority
 from app.schema import TaskBase, TaskPublic
 
 router = APIRouter(prefix='/tasks', tags=['tasks'])
 
+date_format = Annotated[date, Query(example="2026-03-27")]
 
 @router.get('/')
-async def get_all_tasks(session: SessionDB) -> list[TaskPublic]:
-    stmt = select(Task)
+async def get_all_tasks(
+    session: SessionDB,
+    status: TaskStatus | None = None,
+    priority: TaskPriority | None = None,
+    created_at_from: date_format | None = None,
+    created_at_to: date_format | None = None,
+    due_date_from: date_format | None = None,
+    due_date_to: date_format | None = None,
+    limit: int = 100
+) -> list[TaskPublic]:
+    
+    stmt = select(Task).limit(limit)
+    if status:
+        stmt = stmt.where(Task.status == status.name)
+    if priority:
+        stmt = stmt.where(Task.priority == priority.name)
+    
+    
+    # filter date
+    if created_at_from:
+        stmt = stmt.where(Task.created_at >= created_at_from)
+
+    if created_at_to:
+        stmt = stmt.where(Task.created_at <= created_at_to)
+    
+    if due_date_from:
+        stmt = stmt.where(Task.due_date >= due_date_from)
+    
+    if due_date_to:
+        stmt = stmt.where(Task.due_date <= due_date_to)
+
+
     tasks = session.scalars(stmt).all()
     return tasks
 
