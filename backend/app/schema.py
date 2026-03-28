@@ -18,3 +18,7 @@ class TaskPublic(TaskBase):
     id: int
     created_at: datetime
     last_updated: datetime
+
+
+class TaskUpdate(TaskBase):
+    title: str | None = None

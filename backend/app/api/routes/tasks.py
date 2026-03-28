@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from app.api.deps import SessionDB
 from app.models import Task, TaskStatus, TaskPriority
-from app.schema import TaskBase, TaskPublic
+from app.schema import TaskBase, TaskPublic, TaskUpdate
 
 router = APIRouter(prefix='/tasks', tags=['tasks'])
 
@@ -76,6 +76,20 @@ async def update_task(session: SessionDB, id: int, task_in: TaskBase) -> TaskPub
         raise HTTPException(status_code=404, detail="Task not found")
 
     for key, value in task_in.model_dump().items():
+        setattr(task, key, value)
+    
+    session.commit()
+    return task
+
+
+@router.patch('/{id}')
+async def update_task_patch(session: SessionDB, id: int, task_in: TaskUpdate) -> TaskPublic:
+    task = session.get(Task, id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task_dict = task_in.model_dump(exclude_unset=True)
+    for key, value in task_dict.items():
         setattr(task, key, value)
     
     session.commit()
