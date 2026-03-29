@@ -2,6 +2,7 @@ services:
   api:
     build:
       context: ./backend
+    command: ./entrypoint.sh
     ports:
       - 8000:8000
     depends_on:
