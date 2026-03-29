@@ -18,7 +18,18 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: db
-
+  web_chat:
+    build:
+      context: ./backend
+    command: uv run uvicorn app.agent.task_agent:app --host 0.0.0.0 --port 7932
+    ports:
+      - 7932:7932
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql+psycopg://user:secret@db/db
+    env_file:
+      - ./backend/.env
 
 volumes:
   tasks:
