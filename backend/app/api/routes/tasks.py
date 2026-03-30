@@ -129,6 +129,10 @@ async def summary_day(
         dist_by_status[task.status] += 1
         dist_by_priority[task.priority] += 1
         
+
+        if task.status == TaskStatus.COMPLETED:
+            continue
+        
         t_due_date = task.due_date.replace(tzinfo=timezone.utc)
         
         # overdue and upcoming tasks
